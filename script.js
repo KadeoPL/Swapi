@@ -14,7 +14,7 @@ const nextButton = document.getElementById('next');
 const prevButton = document.getElementById('prev');
 const spinner = document.querySelector('.spinner');
 
-async function getPeoples(currentPage, itemsPerPage) {
+/*async function getPeoples(currentPage, itemsPerPage) {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
@@ -38,8 +38,27 @@ async function getPeoples(currentPage, itemsPerPage) {
     });
 
     await Promise.all(promises);
-}
+}*/
 
+async function getPeoples(currentPage, itemsPerPage) {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    const response = await fetch(`https://swapi.dev/api/people/?page=${currentPage}`);
+    const data = await response.json();
+    const peopleData = data.results;
+
+    peopleData.forEach(personData => {
+        getHomeworld(personData.homeworld)
+            .then(homeworldData => {
+                const person = new Person(personData.name, personData.height, homeworldData.name);
+                createHtmlElements(person.name, person.height, person.homeworld);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    });
+}
 
 function getHomeworld(url) {
     return fetch(url)
@@ -115,13 +134,13 @@ async function renderPersonData() {
     await getPeoples(currentPage, itemsPerPage);
     console.log(peopleArr);
     await pagination(currentPage);
-    spinner.style.display = 'none';
     if (currentPage != 1) {
       prevButton.style.display = 'block';
     } else {
       prevButton.style.display = 'none';
     }
     nextButton.style.display = 'block';
+    spinner.style.display = 'none';
   }
   
   renderPersonData();
