@@ -12,6 +12,7 @@ let currentPage = 1;
 const container = document.querySelector('.container');
 const nextButton = document.getElementById('next');
 const prevButton = document.getElementById('prev');
+const spinner = document.querySelector('.spinner');
 
 async function getPeoples(currentPage, itemsPerPage) {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -110,24 +111,29 @@ function createHtmlElements (name, height, homeworld){
 
 
 async function renderPersonData() {
+    spinner.style.display = 'block';
     await getPeoples(currentPage, itemsPerPage);
     console.log(peopleArr);
     await pagination(currentPage);
+    spinner.style.display = 'none';
     if (currentPage != 1) {
-        prevButton.style.visibility = "visible";
+      prevButton.style.display = 'block';
+    } else {
+      prevButton.style.display = 'none';
     }
-    nextButton.style.visibility = "visible";
-
-}
-
-renderPersonData();
-
-nextButton.addEventListener('click', () => {
+    nextButton.style.display = 'block';
+  }
+  
+  renderPersonData();
+  
+  nextButton.addEventListener('click', () => {
     currentPage += 1;
+    container.innerHTML = '';
     renderPersonData();
-})
-
-prevButton.addEventListener('click', () => {
+  });
+  
+  prevButton.addEventListener('click', () => {
     currentPage -= 1;
+    container.innerHTML = '';
     renderPersonData();
-})
+  });
